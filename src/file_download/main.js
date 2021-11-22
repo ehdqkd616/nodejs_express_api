@@ -1,10 +1,10 @@
-require('./api_library/globalvar');
-let util = require('./api_library/util');
+require('../../api_library/globalvar');
+let util = require('../../api_library/util');
 
 const path = require("path");
 const appRoot = require('app-root-path');
 
-const FileDownload = require('./api_library/file_download');
+const FileDownload = require('../../api_library/file_download');
 
 let savePath = path.join(appRoot.path, 'downloadFiles');
 let saveFileName = "ico_animation_wt";
