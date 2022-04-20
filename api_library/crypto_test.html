@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src='api_library/jquery-3.5.1.min.js'></script>
+    <script src='api_library/crypto-js.min.4.1.1.js'></script>
+</head>
+
+<body>
+
+    <script>
+        var deriveKey = function (secret, extra) {
+            /*
+                Computes a derived cryptographic key from a password according to PBKDF2
+                http://en.wikipedia.org/wiki/PBKDF2.
+
+                The function will only return a derived key if at least 'salt' is
+                present in the 'extra' dictionary. The complete set of attributes
+                that can be set in 'extra':
+
+                   salt: The salt value to be used.
+                   iterations: Number of iterations of derivation algorithm to run.
+                   keylen: Key length to derive.
+
+                :returns str -- The derived key or the original secret.
+            */
+
+            if (extra && extra.salt) {
+                // var salt = String(extra.salt);
+                // var salt = String(btoa(extra.salt));
+                var salt = String(extra.salt);
+                var keylen = extra.keylen || 32;
+                var iterations = extra.iterations || 10000;
+                var result = {};
+
+                // console.log("Using crypto.pbkdf2 (only HMAC-SHA1)");
+                // var key = crypto.pbkdf2Sync(secret, salt, iterations, keylen);
+                //return key.toString("base64");
+                console.log("Using CryptoJS.PBKDF2");
+                console.log("Algorithm : CryptoJS.algo.SHA1");
+                var key = CryptoJS.PBKDF2(secret, salt, {
+                    keySize: keylen / 4,
+                    iterations: iterations,
+                    hasher: CryptoJS.algo.SHA1
+                });
+
+                result.salt = salt;
+                result.secret = secret;
+                result.hash = key.toString(CryptoJS.enc.Base64);
+                // result.hash = String(btoa(key));
+                // result.hash = key.toString("base64");
+
+                return result;
+
+            } else {
+                return secret;
+            }
+        }
+
+        $(function () {
+            let secret = '123456';
+            const opt = {};
+            opt.salt = 'IKST';
+            opt.keylen = 64;
+
+            let result = deriveKey(secret, opt);
+
+            console.log(result);
+        });
+    </script>
+
+</body>
+
+</html>
